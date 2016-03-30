@@ -1,0 +1,17 @@
+#+TITLE: ES6学习笔记
+#+AUTHOR: dany
+* ES6学习笔记
+** 缘由
+由于看好react native的前景，而RN是用js来作为主要开发语言，
+在加上h5越来越流行，不学一点js，感觉就要被淘汰了，用这片文章记录自己曾经遇到的问题
+** export 
+export 如果和default 连用，那么 imprt的时候，不能使用解构赋值例如
+#+BEGIN_SRC javascript
+//reducers.js
+export default function todoApp() {
+}
+#+END_SRC
+#+BEGIN_SRC javascript
+import {todoApp} from "./reducers"; //错误
+import todoApp from "./reducers";//正确
+#+END_SRC
