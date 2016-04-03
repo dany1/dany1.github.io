@@ -1,0 +1,125 @@
+#+TITLE: javascript学习笔记
+#+HTML_HEAD:<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+
+#+AUTHOR: dany
+
+* JS学习笔记
+** 缘由
+由于看好react native的前景，而RN是用js来作为主要开发语言，
+在加上h5越来越流行，不学一点js，感觉就要被淘汰了，用这片文章记录自己曾经遇到的问题。
+由于是从0基础开始学习，所以会包含老的js语法问题，也有ES6的语法问题。
+** 与this 问题
+*** 普通函数调用是，this代表全局对象（Global或者window）
+#+BEGIN_SRC javascript
+function test() {
+    this.x = 1;
+}
+test();//this 指向全局对象,全局对象的属性相当于全局变量
+#+END_SRC
+*** 在对象的方法中，this指向这个对象
+    
+#+BEGIN_SRC javascript
+function test() {
+    this.x = 1;
+}
+var obj = {};
+obj.fun = test;
+obj.fun();//this 就是obj
+#+END_SRC
+
+**** apply和call 函数
+apply函数原型是apply(thisArg,[argsArray])
+
+call函数原型是call(thisArg[,arg1[,arg2[,...]]])
+
+这两个函数都是改变调用函数时this对象，改变后的值就是它们的第一个参数thisArg，它们俩的区别就是apply把除了thisArg以外的其它所有参数都放到一个数组中，作为第二个参数，
+而call则把thisArg以外的其它参数逐一的放到后面。
+
+apply有数组的展开作用，这点和ES6的展开运算符有相似的地方
+#+BEGIN_SRC javascript
+//改变this示例
+var obj = {};
+obj.fun = function(x, y, z) {
+    return x + y + z;
+}
+var obj2 = {};
+var args = [1, 2, 3];
+obj.fun.apply(obj2, args);//在调用的时候 this 指向的是obj2，x ＝ 1，y = 2, z = 3
+#+END_SRC
+
+#+BEGIN_SRC javascript
+//扩展运算符示例
+function f(x, y, z) {
+    return x + y + z;
+}
+let args = [1, 2, 3];
+//如果想以 x = 1  y = 2 z = 3调用f函数
+//ES5
+f.apply(null, args);
+//ES6
+f(...args);
+#+END_SRC
+
+**** => 函数的this
+=> 本身没有this，里面的this就是定义=>函数时候所在的this。
+*** 作为构造函数调用，this就是这个新对象
+#+BEGIN_SRC javascript
+function test() {
+    this.x = 1;
+}
+var obj = new test();
+#+END_SRC
+
+**** nodejs中，全局环境中的this指向全局变量global，模块环境中 this指向module.exports，浏览器中，全局环境的this指向window
+
+
+** export 
+export 如果和default 连用，那么 imprt的时候，不能使用解构赋值例如
+#+BEGIN_SRC javascript
+//reducers.js
+export default function todoApp() {
+
+}
+#+END_SRC
+#+BEGIN_SRC javascript
+import {todoApp} from "./reducers"; //错误
+import todoApp from "./reducers";//正确
+#+END_SRC
+
+** 
+
+** use strict
+该命令保证了函数在严格模式下运行，在严格模式下，函数内部的this不能指向全局对象，默认等于undefined，所以不加new调用构造函数会报错。
+
+** 构造函数
+如果构造函数的return语句返回的是对象，new命令会返回return语句指定的对象；否则，就会不管retturn语句，返回构造后的上下文对象。
+#+BEGIN_SRC javascript
+var Vecicle=function() {
+    this.price= 1000;
+    return 1000;
+}
+(new Vehicle()) === 1000;//false
+#+END_SRC
+上面代码中，Vehicle是一个构造函数，它的return语句返回的是一个数值，这时，new命令会忽略这个return语句，返回“构造”后的this对象。
+
+如果return语句返回的是一个跟this无关的新对象，new命令会返回这个新对象，而不是this对象。
+#+BEGIN_SRC javascript
+var Vehicle=function() {
+    this.price = 1000;
+    return {price:2000};
+}
+(new Vehicle()).price;// 2000
+#+END_SRC
+
+** instance of 与typeof的区别
+ typeof只能返回基本的类型，比如Object， string等，不能判断某个实例是否数据某个自定义的类型。
+*** 判断空对象
+#+BEGIN_SRC javascript
+ ({}) instanceof Object;
+#+END_SRC
+空对象外面，必须要加括号，否则javascript引擎会把一对大括号解释为一个代码块，而不是一个对象，从而导致这一行代码被解释为
+#+BEGIN_SRC javascript
+{};instanceof Object
+#+END_SRC
+引擎就会报错。
+ 

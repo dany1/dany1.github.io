@@ -1,0 +1,91 @@
+/* @import url("worg.css"); */
+/* @import url("solarized-light.css");*/
+@import url("solarized-dark.css");
+@import url(http://fonts.googleapis.com/css?family=Arvo|Lora|PT+Serif|Merriweather|Bitter|Lustria|Crimson+Text);
+@import url(http://fonts.googleapis.com/css?family=Roboto|Source+Sans|PT+Sans|PT+Sans+Narrow|PT+Sans+Caption);
+@import url(http://fonts.googleapis.com/css?family=Anonymous+Pro|Inconsolata|Cutive+Mono|Share+Tech+Mono|Oxygen+Mono);
+
+
+.outline-2 p, .outline-3 p,
+.outline-4 p, .outline-5 p,
+.org-ol li, .org-ul li{
+	font-family: "PT Sans", "Source Sans", Roboto, Calibri, sans-serif;
+	width: 75%;
+	text-align:justify;
+}
+
+.outline-2 h2, .outline-3 h3,
+.outline-4 h4, .outline-5 h5 {
+	font-family: "PT Sans Narrow", "PT Sans Caption", Roboto, Calibri, sans-serif;
+	width:75%
+}
+
+.outline-4 h4, .outline-5 h5 {
+	font-size: 1.2em;
+}
+
+pre {
+	font-family: "Anonymous Pro", "Inconsolata", "Cutive Mono", "Share Tech Mono", "Oxygen Mono", Consolas, monospace;
+}
+
+#table-of-contents:hover #text-table-of-contents {
+	/*font-family: Lustria, Cambria, serif;*/
+    font-family: Roboto, "PT Sans", sans-serif;
+}
+
+#postamble {
+	width:75%;
+}
+
+/** Copied from worg.css to get floating TOC effect in solarized theme.
+ * Remove this block if you are including worg.css
+ */
+/* TOC inspired by http://jashkenas.github.com/coffee-script */
+#table-of-contents {
+	font-size: 10pt;
+	position: fixed;
+	right: 0em;
+	top: 0em;
+	/*background-color: #eee8d5; for light background */
+	background-color: #073642; /* dark background */
+	line-height: 12pt;
+	text-align: right;
+	box-shadow: 0 0 1em #777777;
+	-webkit-box-shadow: 0 0 1em #777777;
+	-moz-box-shadow: 0 0 1em #777777;
+	-webkit-border-bottom-left-radius: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	/* ensure doesn't flow off the screen when expanded */
+	max-height: 80%;
+	overflow: auto;
+}
+
+#table-of-contents h2 {
+    font-size: 13pt;
+    max-width: 9em;
+    border: 0;
+    font-weight: normal;
+    padding-left: 0.5em;
+    padding-right: 0.5em;
+    padding-top: 0.05em;
+    padding-bottom: 0.05em;
+}
+
+#table-of-contents #text-table-of-contents {
+    display: none;
+    text-align: left;
+}
+
+#table-of-contents:hover #text-table-of-contents {
+    display: block;
+    padding: 0.5em;
+    margin-top: -1.5em;
+}
+
+#license {
+  /* padding: .3em; */
+  /* border: 1px solid gray; */
+  background-color: #eeeeee;
+}
+
+/** End of copy from Worg.css */

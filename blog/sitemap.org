@@ -1,3 +1,5 @@
 #+TITLE: sitemap
 
-   + [[file:learnjavascript.org][2016-03-30 ES6学习笔记]]
+   + 2016
+     + [[file:2016/learnjavascript.org][2016-04-03 javascript学习笔记]]
+     + [[file:2016/learnredux.org][2016-03-30 redux学习笔记]]

@@ -1,0 +1,24 @@
+#+TITLE:redux学习笔记
+#+HTML_HEAD:<link/>
+* redux简介
+* 个人理解
+  redux也好，flux也罢，就是一个统一的消息处理的规则。
+** 要根据数据来渲染／显示
+   比如有一个标签，标签里面显示什么文字，要根据与之绑定的数据来确认
+** dispatch 就是消息派发的地方
+   dispatch就是统一的消息派发的地方。这里一般来说会有一个的switch case的地方，来根据消息的类型派发到具体的处理函数中
+#+BEGIN_SRC javascript
+switch(message.type) {
+CASE LOGIN: {
+}
+case BUY_ITEM: {
+}
+.....
+}
+#+END_SRC
+为了使这个switch case写的顺眼一些，redux做了一些封装 例如combineReducer，但是这个函数是容易把初学者搞晕的地方，还不如直接就用switch case来的直观一些
+** action就是产生消息结构体的地方
+   这里负责产生结构体这个工作，至于为什么要产生这个结构体，不是这里负责的，有可能是因为网络的数据到达了要产生结构体，也有可能是因为用户点击了某个按钮所以要产生结构体。
+   这里喝reducer其实是有关系的，因为这里产生的结构体要在reducer里面使用，所以reducer要理解这里产生的结构体的每一个字段的含义
+   
+   

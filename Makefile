@@ -1,5 +1,5 @@
-EMACS=emacs
-ORG_CONFIG_FILE=publish-config.el
+EMACS=emacsclient
+ORG_CONFIG_FILE=config.el
 EMACS_OPTS=--eval "(load-file \"$(ORG_CONFIG_FILE)\")"
 DEST_HOST='myhost.com:public_html/'
 OUTPUT_DIR=~/Documents/github/dany1.github.io/publish_html
