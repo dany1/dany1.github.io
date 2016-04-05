@@ -3,20 +3,20 @@
 
 #+AUTHOR: dany
 
-* JS学习笔记
-** 缘由
+JS学习笔记
+* 缘由
 由于看好react native的前景，而RN是用js来作为主要开发语言，
 在加上h5越来越流行，不学一点js，感觉就要被淘汰了，用这片文章记录自己曾经遇到的问题。
 由于是从0基础开始学习，所以会包含老的js语法问题，也有ES6的语法问题。
-** 与this 问题
-*** 普通函数调用是，this代表全局对象（Global或者window）
+* 与this 问题
+** 普通函数调用是，this代表全局对象（Global或者window）
 #+BEGIN_SRC javascript
 function test() {
     this.x = 1;
 }
 test();//this 指向全局对象,全局对象的属性相当于全局变量
 #+END_SRC
-*** 在对象的方法中，this指向这个对象
+** 在对象的方法中，this指向这个对象
     
 #+BEGIN_SRC javascript
 function test() {
@@ -27,7 +27,7 @@ obj.fun = test;
 obj.fun();//this 就是obj
 #+END_SRC
 
-**** apply和call 函数
+*** apply和call 函数
 apply函数原型是apply(thisArg,[argsArray])
 
 call函数原型是call(thisArg[,arg1[,arg2[,...]]])
@@ -60,9 +60,9 @@ f.apply(null, args);
 f(...args);
 #+END_SRC
 
-**** => 函数的this
+*** => 函数的this
 => 本身没有this，里面的this就是定义=>函数时候所在的this。
-*** 作为构造函数调用，this就是这个新对象
+** 作为构造函数调用，this就是这个新对象
 #+BEGIN_SRC javascript
 function test() {
     this.x = 1;
@@ -70,10 +70,9 @@ function test() {
 var obj = new test();
 #+END_SRC
 
-**** nodejs中，全局环境中的this指向全局变量global，模块环境中 this指向module.exports，浏览器中，全局环境的this指向window
+** nodejs中，全局环境中的this指向全局变量global，模块环境中 this指向module.exports，浏览器中，全局环境的this指向window
 
-
-** export 
+* export 
 export 如果和default 连用，那么 imprt的时候，不能使用解构赋值例如
 #+BEGIN_SRC javascript
 //reducers.js
@@ -86,12 +85,10 @@ import {todoApp} from "./reducers"; //错误
 import todoApp from "./reducers";//正确
 #+END_SRC
 
-** 
-
-** use strict
+* use strict
 该命令保证了函数在严格模式下运行，在严格模式下，函数内部的this不能指向全局对象，默认等于undefined，所以不加new调用构造函数会报错。
 
-** 构造函数
+* 构造函数
 如果构造函数的return语句返回的是对象，new命令会返回return语句指定的对象；否则，就会不管retturn语句，返回构造后的上下文对象。
 #+BEGIN_SRC javascript
 var Vecicle=function() {
@@ -111,9 +108,9 @@ var Vehicle=function() {
 (new Vehicle()).price;// 2000
 #+END_SRC
 
-** instance of 与typeof的区别
+* instance of 与typeof的区别
  typeof只能返回基本的类型，比如Object， string等，不能判断某个实例是否数据某个自定义的类型。
-*** 判断空对象
+** 判断空对象
 #+BEGIN_SRC javascript
  ({}) instanceof Object;
 #+END_SRC
@@ -123,3 +120,48 @@ var Vehicle=function() {
 #+END_SRC
 引擎就会报错。
  
+* 属性的简单表示方法
+ES6中允许在对象中只写属性名，不写属性值，这时属性值等于属性名所代表的变量的值。
+#+BEGIN_SRC javascript
+let foo = 'bar';
+let baz ={foo};//等同于 let baz = {foo:foo}
+bar;//{foo:'bar'}
+#+END_SRC
+* Object.is()
+==运算符回进行类型转换，===不会转换但是NaN不等于自身，所以javascript缺少一种只要值一样就相等的运算符，ES6的Object.iss就是“Same－value equality”，它与===基本一致区别就是+0与-0不等，NaN与NaN相等
+#+BEGIN_SRC javascript
++0 === -0;//true
+NaN === NaN;//false
+Object.is(+0, -0);//false
+Object.is(NaN, NaN);//true
+//ES5 可以通过下面方法模拟Object.is
+Object.defineProperty(Object, 'is', {
+value:function(x, y) {
+    if(x === y) {
+        //针对+0与-0的情况
+        return x !== 0 || 1/x === 1/y
+    }
+    return x !== x && y !== y;
+}, 
+configurable:true,
+enumerable:false,
+writable:true
+});
+#+END_SRC
+* Object.assign()
+Object.assign只拷贝自身属性，不可枚举属性和继承的属性不会被拷贝。
+
+Object.assign是浅拷贝，即如果源对象的某个属性值是对象，那么目标对象拷贝得到的是这个对象的引用。
+#+BEGIN_SRC javascript
+var obj1 = {a:{b:1}};
+var obj2 = Object.assign({},obj1);
+obj1.a.b = 2;
+console.log(obj2.a.b);//2
+#+END_SRC
+正式因为钱拷贝，所以Object.assign遇到同名属性，是替换而不合并
+#+BEGIN_SRC javascript
+var obj1 = {a:{b:'c',d:'e'}}
+var obj2 = Object.assign({},obj1, {a:{b:'hello'}});
+console.log(obj2);//得到的是{a:{b:'hello'}} 而不是{a:{b:'hello',d;'e'}}
+#+END_SRC
+

@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>javascript学习笔记</title>
-<!-- 2016-04-03 Sun 12:16 -->
+<!-- 2016-04-05 Tue 16:55 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="dany" />
@@ -143,46 +143,40 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#sec-1">JS学习笔记</a>
+<li><a href="#sec-1">缘由</a></li>
+<li><a href="#sec-2">与this 问题</a>
 <ul>
-<li><a href="#sec-1-1">缘由</a></li>
-<li><a href="#sec-1-2">与this 问题</a>
+<li><a href="#sec-2-1">普通函数调用是，this代表全局对象（Global或者window）</a></li>
+<li><a href="#sec-2-2">在对象的方法中，this指向这个对象</a>
 <ul>
-<li><a href="#sec-1-2-1">普通函数调用是，this代表全局对象（Global或者window）</a></li>
-<li><a href="#sec-1-2-2">在对象的方法中，this指向这个对象</a>
-<ul>
-<li><a href="#sec-1-2-2-1">apply和call 函数</a></li>
-<li><a href="#sec-1-2-2-2">=&gt; 函数的this</a></li>
+<li><a href="#sec-2-2-1">apply和call 函数</a></li>
+<li><a href="#sec-2-2-2">=&gt; 函数的this</a></li>
 </ul>
 </li>
-<li><a href="#sec-1-2-3">作为构造函数调用，this就是这个新对象</a>
+<li><a href="#sec-2-3">作为构造函数调用，this就是这个新对象</a></li>
+<li><a href="#sec-2-4">nodejs中，全局环境中的this指向全局变量global，模块环境中 this指向module.exports，浏览器中，全局环境的this指向window</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">export</a></li>
+<li><a href="#sec-4">use strict</a></li>
+<li><a href="#sec-5">构造函数</a></li>
+<li><a href="#sec-6">instance of 与typeof的区别</a>
 <ul>
-<li><a href="#sec-1-2-3-1">nodejs中，全局环境中的this指向全局变量global，模块环境中 this指向module.exports，浏览器中，全局环境的this指向window</a></li>
+<li><a href="#sec-6-1">判断空对象</a></li>
 </ul>
 </li>
-</ul>
-</li>
-<li><a href="#sec-1-3">export</a></li>
-<li><a href="#sec-1-4"></a></li>
-<li><a href="#sec-1-5">use strict</a></li>
-<li><a href="#sec-1-6">构造函数</a></li>
-<li><a href="#sec-1-7">instance of 与typeof的区别</a>
-<ul>
-<li><a href="#sec-1-7-1">判断空对象</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li><a href="#sec-7">属性的简单表示方法</a></li>
+<li><a href="#sec-8">Object.is()</a></li>
+<li><a href="#sec-9">Object.assign()</a></li>
 </ul>
 </div>
 </div>
-
+<p>
+JS学习笔记
+</p>
 <div id="outline-container-sec-1" class="outline-2">
-<h2 id="sec-1">JS学习笔记</h2>
+<h2 id="sec-1">缘由</h2>
 <div class="outline-text-2" id="text-1">
-</div><div id="outline-container-sec-1-1" class="outline-3">
-<h3 id="sec-1-1">缘由</h3>
-<div class="outline-text-3" id="text-1-1">
 <p>
 由于看好react native的前景，而RN是用js来作为主要开发语言，
 在加上h5越来越流行，不学一点js，感觉就要被淘汰了，用这片文章记录自己曾经遇到的问题。
@@ -190,12 +184,12 @@ for the JavaScript code in this tag.
 </p>
 </div>
 </div>
-<div id="outline-container-sec-1-2" class="outline-3">
-<h3 id="sec-1-2">与this 问题</h3>
-<div class="outline-text-3" id="text-1-2">
-</div><div id="outline-container-sec-1-2-1" class="outline-4">
-<h4 id="sec-1-2-1">普通函数调用是，this代表全局对象（Global或者window）</h4>
-<div class="outline-text-4" id="text-1-2-1">
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">与this 问题</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1">普通函数调用是，this代表全局对象（Global或者window）</h3>
+<div class="outline-text-3" id="text-2-1">
 <div class="org-src-container">
 
 <pre class="src src-javascript">function test() {
@@ -206,9 +200,9 @@ test();//this 指向全局对象,全局对象的属性相当于全局变量
 </div>
 </div>
 </div>
-<div id="outline-container-sec-1-2-2" class="outline-4">
-<h4 id="sec-1-2-2">在对象的方法中，this指向这个对象</h4>
-<div class="outline-text-4" id="text-1-2-2">
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2">在对象的方法中，this指向这个对象</h3>
+<div class="outline-text-3" id="text-2-2">
 <div class="org-src-container">
 
 <pre class="src src-javascript">function test() {
@@ -221,9 +215,9 @@ obj.fun();//this 就是obj
 </div>
 </div>
 
-<div id="outline-container-sec-1-2-2-1" class="outline-5">
-<h5 id="sec-1-2-2-1">apply和call 函数</h5>
-<div class="outline-text-5" id="text-1-2-2-1">
+<div id="outline-container-sec-2-2-1" class="outline-4">
+<h4 id="sec-2-2-1">apply和call 函数</h4>
+<div class="outline-text-4" id="text-2-2-1">
 <p>
 apply函数原型是apply(thisArg,[argsArray])
 </p>
@@ -270,18 +264,18 @@ f(...args);
 </div>
 </div>
 
-<div id="outline-container-sec-1-2-2-2" class="outline-5">
-<h5 id="sec-1-2-2-2">=&gt; 函数的this</h5>
-<div class="outline-text-5" id="text-1-2-2-2">
+<div id="outline-container-sec-2-2-2" class="outline-4">
+<h4 id="sec-2-2-2">=&gt; 函数的this</h4>
+<div class="outline-text-4" id="text-2-2-2">
 <p>
 =&gt; 本身没有this，里面的this就是定义=&gt;函数时候所在的this。
 </p>
 </div>
 </div>
 </div>
-<div id="outline-container-sec-1-2-3" class="outline-4">
-<h4 id="sec-1-2-3">作为构造函数调用，this就是这个新对象</h4>
-<div class="outline-text-4" id="text-1-2-3">
+<div id="outline-container-sec-2-3" class="outline-3">
+<h3 id="sec-2-3">作为构造函数调用，this就是这个新对象</h3>
+<div class="outline-text-3" id="text-2-3">
 <div class="org-src-container">
 
 <pre class="src src-javascript">function test() {
@@ -291,17 +285,16 @@ var obj = new test();
 </pre>
 </div>
 </div>
-
-<div id="outline-container-sec-1-2-3-1" class="outline-5">
-<h5 id="sec-1-2-3-1">nodejs中，全局环境中的this指向全局变量global，模块环境中 this指向module.exports，浏览器中，全局环境的this指向window</h5>
-</div>
-</div>
 </div>
 
+<div id="outline-container-sec-2-4" class="outline-3">
+<h3 id="sec-2-4">nodejs中，全局环境中的this指向全局变量global，模块环境中 this指向module.exports，浏览器中，全局环境的this指向window</h3>
+</div>
+</div>
 
-<div id="outline-container-sec-1-3" class="outline-3">
-<h3 id="sec-1-3">export</h3>
-<div class="outline-text-3" id="text-1-3">
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3">export</h2>
+<div class="outline-text-2" id="text-3">
 <p>
 export 如果和default 连用，那么 imprt的时候，不能使用解构赋值例如
 </p>
@@ -322,22 +315,18 @@ import todoApp from "./reducers";//正确
 </div>
 </div>
 
-<div id="outline-container-sec-1-4" class="outline-3">
-<h3 id="sec-1-4"></h3>
-</div>
-
-<div id="outline-container-sec-1-5" class="outline-3">
-<h3 id="sec-1-5">use strict</h3>
-<div class="outline-text-3" id="text-1-5">
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4">use strict</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 该命令保证了函数在严格模式下运行，在严格模式下，函数内部的this不能指向全局对象，默认等于undefined，所以不加new调用构造函数会报错。
 </p>
 </div>
 </div>
 
-<div id="outline-container-sec-1-6" class="outline-3">
-<h3 id="sec-1-6">构造函数</h3>
-<div class="outline-text-3" id="text-1-6">
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5">构造函数</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 如果构造函数的return语句返回的是对象，new命令会返回return语句指定的对象；否则，就会不管retturn语句，返回构造后的上下文对象。
 </p>
@@ -369,16 +358,16 @@ import todoApp from "./reducers";//正确
 </div>
 </div>
 
-<div id="outline-container-sec-1-7" class="outline-3">
-<h3 id="sec-1-7">instance of 与typeof的区别</h3>
-<div class="outline-text-3" id="text-1-7">
+<div id="outline-container-sec-6" class="outline-2">
+<h2 id="sec-6">instance of 与typeof的区别</h2>
+<div class="outline-text-2" id="text-6">
 <p>
 typeof只能返回基本的类型，比如Object， string等，不能判断某个实例是否数据某个自定义的类型。
 </p>
 </div>
-<div id="outline-container-sec-1-7-1" class="outline-4">
-<h4 id="sec-1-7-1">判断空对象</h4>
-<div class="outline-text-4" id="text-1-7-1">
+<div id="outline-container-sec-6-1" class="outline-3">
+<h3 id="sec-6-1">判断空对象</h3>
+<div class="outline-text-3" id="text-6-1">
 <div class="org-src-container">
 
 <pre class="src src-javascript">({}) instanceof Object;
@@ -398,11 +387,85 @@ typeof只能返回基本的类型，比如Object， string等，不能判断某�
 </div>
 </div>
 </div>
+
+<div id="outline-container-sec-7" class="outline-2">
+<h2 id="sec-7">属性的简单表示方法</h2>
+<div class="outline-text-2" id="text-7">
+<p>
+ES6中允许在对象中只写属性名，不写属性值，这时属性值等于属性名所代表的变量的值。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">let foo = 'bar';
+let baz ={foo};//等同于 let baz = {foo:foo}
+bar;//{foo:'bar'}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-8" class="outline-2">
+<h2 id="sec-8">Object.is()</h2>
+<div class="outline-text-2" id="text-8">
+<p>
+==运算符回进行类型转换，===不会转换但是NaN不等于自身，所以javascript缺少一种只要值一样就相等的运算符，ES6的Object.iss就是“Same－value equality”，它与===基本一致区别就是+0与-0不等，NaN与NaN相等
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">+0 === -0;//true
+NaN === NaN;//false
+Object.is(+0, -0);//false
+Object.is(NaN, NaN);//true
+//ES5 可以通过下面方法模拟Object.is
+Object.defineProperty(Object, 'is', {
+value:function(x, y) {
+    if(x === y) {
+	//针对+0与-0的情况
+	return x !== 0 || 1/x === 1/y
+    }
+    return x !== x &amp;&amp; y !== y;
+}, 
+configurable:true,
+enumerable:false,
+writable:true
+});
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-9" class="outline-2">
+<h2 id="sec-9">Object.assign()</h2>
+<div class="outline-text-2" id="text-9">
+<p>
+Object.assign只拷贝自身属性，不可枚举属性和继承的属性不会被拷贝。
+</p>
+
+<p>
+Object.assign是浅拷贝，即如果源对象的某个属性值是对象，那么目标对象拷贝得到的是这个对象的引用。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">var obj1 = {a:{b:1}};
+var obj2 = Object.assign({},obj1);
+obj1.a.b = 2;
+console.log(obj2.a.b);//2
+</pre>
+</div>
+<p>
+正式因为钱拷贝，所以Object.assign遇到同名属性，是替换而不合并
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">var obj1 = {a:{b:'c',d:'e'}}
+var obj2 = Object.assign({},obj1, {a:{b:'hello'}});
+console.log(obj2);//得到的是{a:{b:'hello'}} 而不是{a:{b:'hello',d;'e'}}
+</pre>
+</div>
+</div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: dany</p>
-<p class="date">Created: 2016-04-03 Sun 12:16</p>
+<p class="date">Created: 2016-04-05 Tue 16:55</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
