@@ -1,0 +1,46 @@
+#+TITLE:react-native 学习笔记
+#+HTML_HEAD:<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+#+AUTHOR:dany
+
+* 语法问题
+  官方的demo还使用了flowtype  网址: www.flowtype.org
+* ListView滑动问题
+#+BEGIN_SRC html
+<View>
+    <ListView ..../>
+</View>
+#+END_SRC
+这种结构的View和ListView的flex必须都设置成1 ListView才可以滑动
+* ListView DataSource 问题
+DataSource 没有文档描述，在说明DataSource之前，先说明两个约定sectionIndex和rowIndex，这两个都是从0开始的number类型的数字，sectionIndex表示当前section的序号，
+rowIndex表示当前行的序号，好了我们继续DataSource的方法，DataSource主要有2个方法
+** cloneWithRowsAndSections(dataBlob:any,sectionIdentities:?Array<string>, rowIdentities:?Array<Array<string>>)
+dataBlob 大部分情况下是一个二维的关联数组, 第一维的索引是 sectionId， 第二维的索引是rowId，即dataBlob[sectionId][rowId]=> rowData 这种映射
+sectionIdentities 是一个一维普通数组，普通数组的意思是 key是 0,1,2,...., sectionIdentities的值是由dataBlob的第一维的 key组成的，即sectionIdentities[sectionIndex]=>sectionId 的映射
+rowIdentities 是一个二维普通数组：第一维是sectionIndex，第二维是 rowIndex，即rowIdentities[sectionIndex][rowIndex]=>rowId 的映射
+我们看一下DataSource的源码里面是如何取rowData的
+#+BEGIN_SRC javascript
+  getRowData(sectionIndex: number, rowIndex: number): any {
+    var sectionID = this.sectionIdentities[sectionIndex];//sectionIndex => sectionID的影射
+    var rowID = this.rowIdentities[sectionIndex][rowIndex];// sectionIndex + rowIndex => rowId的影射
+    warning(
+      sectionID !== undefined && rowID !== undefined,
+      'rendering invalid section, row: ' + sectionIndex + ', ' + rowIndex
+    );
+    return this._getRowData(this._dataBlob, sectionID, rowID);
+  }
+#+END_SRC
+** cloneWithRows(dataBlob:Array<any> | {[key:string]:any}, rowIdentities:?Array<string>)
+这是cloneWithRowsAndSections的简化版本,内部会调用cloneWithRowsAndSections 我们看一下源码是如何实现的
+#+BEGIN_SRC javascript
+   cloneWithRows(
+       dataBlob: Array<any> | {[key: string]: any},
+       rowIdentities: ?Array<string>
+   ): ListViewDataSource {
+    var rowIds = rowIdentities ? [rowIdentities] : null;//把rowIdentities转化为二维数组
+    if (!this._sectionHeaderHasChanged) {
+      this._sectionHeaderHasChanged = () => false;
+    }
+    return this.cloneWithRowsAndSections({s1: dataBlob}, ['s1'], rowIds);//默认的section是s1
+  }
+#+END_SRC

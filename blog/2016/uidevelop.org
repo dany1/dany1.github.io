@@ -1,0 +1,6 @@
+#+TITLE:ui开发的犄角旮旯
+
+* ios各种高度
+状态栏:20
+导航栏(navigationBar）:44
+标签栏(tabbar):49

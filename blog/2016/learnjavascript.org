@@ -165,3 +165,15 @@ var obj2 = Object.assign({},obj1, {a:{b:'hello'}});
 console.log(obj2);//得到的是{a:{b:'hello'}} 而不是{a:{b:'hello',d;'e'}}
 #+END_SRC
 
+* Array 类型
+** 构造函数传递的是数值，则会创建包含数值那么多项数的数组，如果传递的是其他类型，则会创建包含这个值的只有一项的数组
+#+BEGIN_SRC javascript
+var colors = new Array(3);//创建一个包含3项的数组
+var names = new Array("greg");//创建一个包含1项的数组
+#+END_SRC
+在使用Array的构造函数，前面的new操作符可以省略
+#+BEGIN_SRC javascript
+var colors = Array(3);//创建一个包含3项的数组
+var names = Array("greg");//创建一个包含1项的数组
+#+END_SRC
+第三种方法

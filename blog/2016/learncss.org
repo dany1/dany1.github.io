@@ -1,0 +1,28 @@
+#+TITLE:css 学习
+#+HTML_HEAD:<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+
+* 选择器
+** 普通选择器
+| 例子     | 类别       | 解释                      |
+| h1       | 类型选择器 | 选择元素的一个类型        |
+| .tagline | 类选择器   | 以class属性的值来选择元素 |
+| #intro   | ID选择器   | 以id属性值来选择元素      |
+** 子选择器
+| 例子         | 类别         | 解释                      |
+| article h2   | 后代选择器   | article内部的所有h2       |
+| article > h2 | 子元素选择器 | 以article为父元素的所有h2 |
+** 兄弟选择器
+| 例子 | 类别           | 解释                              |
+| h2~p | 普通兄弟选择器 | h2后面拥有共同父元素的p元素       |
+| h2+p | 相邻兄弟选择器 | 紧跟在h2后面拥有共同父元素的p元素 |
+
+
+
+
+* 单行文本超长后自动省略号
+#+BEGIN_SRC css
+white-space:nowrap;
+overflow:hidden;
+text-overflow:ellipsis;
+#+END_SRC
+经过这3个属性设置之后，超长的单行文本会显示省略号

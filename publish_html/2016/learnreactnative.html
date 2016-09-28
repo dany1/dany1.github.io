@@ -3,8 +3,8 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<title>sitemap</title>
-<!-- 2016-09-22 Thu 15:30 -->
+<title>react-native 学习笔记</title>
+<!-- 2016-08-22 Mon 12:28 -->
 <meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta  name="generator" content="Org-mode" />
 <meta  name="author" content="dany" />
@@ -88,7 +88,7 @@
     { background-color: #ffff00; color: #000000; font-weight: bold; }
   /*]]>*/-->
 </style>
-<link rel='stylesheet' type='text/css' href='css/worg.css'/>
+<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
 <script type="text/javascript">
 /*
 @licstart  The following is the entire license notice for the
@@ -138,31 +138,105 @@ for the JavaScript code in this tag.
 </head>
 <body>
 <div id="content">
-<h1 class="title">sitemap</h1>
-<ul class="org-ul">
-<li>2016
-<ul class="org-ul">
-<li><a href="2016/ufxtodo.html">2016-04-06 UFX遗留问题</a>
-</li>
-<li><a href="2016/learncss.html">2016-09-22 css 学习</a>
-</li>
-<li><a href="2016/learnjavascript.html">2016-09-09 javascript学习笔记</a>
-</li>
-<li><a href="2016/javascriptdevelop.html">2016-08-23 javascript高级程序设计（第三版）读书笔记</a>
-</li>
-<li><a href="2016/learnreactnative.html">2016-04-14 react-native 学习笔记</a>
-</li>
-<li><a href="2016/learnredux.html">2016-03-30 redux学习笔记</a>
-</li>
-<li><a href="2016/uidevelop.html">2016-04-06 ui开发的犄角旮旯</a>
-</li>
+<h1 class="title">react-native 学习笔记</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">语法问题</a></li>
+<li><a href="#sec-2">ListView滑动问题</a></li>
+<li><a href="#sec-3">ListView DataSource 问题</a>
+<ul>
+<li><a href="#sec-3-1">cloneWithRowsAndSections(dataBlob:any,sectionIdentities:?Array&lt;string&gt;, rowIdentities:?Array&lt;Array&lt;string&gt;&gt;)</a></li>
+<li><a href="#sec-3-2">cloneWithRows(dataBlob:Array&lt;any&gt; | {[key:string]:any}, rowIdentities:?Array&lt;string&gt;)</a></li>
 </ul>
 </li>
 </ul>
 </div>
+</div>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1">语法问题</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+官方的demo还使用了flowtype  网址: www.flowtype.org
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2">ListView滑动问题</h2>
+<div class="outline-text-2" id="text-2">
+<div class="org-src-container">
+
+<pre class="src src-html">&lt;View&gt;
+    &lt;ListView ..../&gt;
+&lt;/View&gt;
+</pre>
+</div>
+<p>
+这种结构的View和ListView的flex必须都设置成1 ListView才可以滑动
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3">ListView DataSource 问题</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+DataSource 没有文档描述，在说明DataSource之前，先说明两个约定sectionIndex和rowIndex，这两个都是从0开始的number类型的数字，sectionIndex表示当前section的序号，
+rowIndex表示当前行的序号，好了我们继续DataSource的方法，DataSource主要有2个方法
+</p>
+</div>
+<div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1">cloneWithRowsAndSections(dataBlob:any,sectionIdentities:?Array&lt;string&gt;, rowIdentities:?Array&lt;Array&lt;string&gt;&gt;)</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+dataBlob 大部分情况下是一个二维的关联数组, 第一维的索引是 sectionId， 第二维的索引是rowId，即dataBlob[sectionId][rowId]=&gt; rowData 这种映射
+sectionIdentities 是一个一维普通数组，普通数组的意思是 key是 0,1,2,&#x2026;., sectionIdentities的值是由dataBlob的第一维的 key组成的，即sectionIdentities[sectionIndex]=&gt;sectionId 的映射
+rowIdentities 是一个二维普通数组：第一维是sectionIndex，第二维是 rowIndex，即rowIdentities[sectionIndex][rowIndex]=&gt;rowId 的映射
+我们看一下DataSource的源码里面是如何取rowData的
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">getRowData(sectionIndex: number, rowIndex: number): any {
+  var sectionID = this.sectionIdentities[sectionIndex];//sectionIndex =&gt; sectionID的影射
+  var rowID = this.rowIdentities[sectionIndex][rowIndex];// sectionIndex + rowIndex =&gt; rowId的影射
+  warning(
+    sectionID !== undefined &amp;&amp; rowID !== undefined,
+    'rendering invalid section, row: ' + sectionIndex + ', ' + rowIndex
+  );
+  return this._getRowData(this._dataBlob, sectionID, rowID);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2">cloneWithRows(dataBlob:Array&lt;any&gt; | {[key:string]:any}, rowIdentities:?Array&lt;string&gt;)</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+这是cloneWithRowsAndSections的简化版本,内部会调用cloneWithRowsAndSections 我们看一下源码是如何实现的
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript"> cloneWithRows(
+     dataBlob: Array&lt;any&gt; | {[key: string]: any},
+     rowIdentities: ?Array&lt;string&gt;
+ ): ListViewDataSource {
+  var rowIds = rowIdentities ? [rowIdentities] : null;//把rowIdentities转化为二维数组
+  if (!this._sectionHeaderHasChanged) {
+    this._sectionHeaderHasChanged = () =&gt; false;
+  }
+  return this.cloneWithRowsAndSections({s1: dataBlob}, ['s1'], rowIds);//默认的section是s1
+}
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div id="postamble" class="status">
 <p class="author">Author: dany</p>
-<p class="date">Created: 2016-09-22 Thu 15:30</p>
+<p class="date">Created: 2016-08-22 Mon 12:28</p>
 <p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.5.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>

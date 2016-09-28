@@ -1,0 +1,117 @@
+#+TITLE: javascript高级程序设计（第三版）读书笔记
+#+HTML_HEAD:<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+
+#+AUTHOR: dany
+
+JS学习笔记
+* 第二章
+** 引入javascript 
+*** async
+立刻下载脚本，不妨碍其他的操作。只对外部文件有效
+*** defer
+脚本可以延迟到文档完全被解析和显示之后再被执行。只对外部文件有效
+*** async 与defer的区别与联系
+**** 相同之处
+都是异步加载
+**** 区别
+异步加载完成之后，async方式加载的脚本会立刻被执行，不管文档是否被加载完。defer方式加载的脚本会等文档被解析显示之后才会被执行。理论上会在DOMContentLoaded事件之前执行，并且执行的顺序会按照引用的顺序，但实际情况未知.
+*** type
+虽然text/javascript和text／ecmascript已经不推荐被使用，目前依旧还是使用text/javascript。如果不指定这个值，默认的仍是text/javascript。
+*** src
+引入外部文件。
+一个script标签引入外部文件的同时包含了额外的javascript代码，嵌入的代码会被忽略.
+
+** <script>标签
+*** 规范
+引入javascript文件<script />标签是xhtml的规范，不是html的，html的规范是必须<script></script>
+*** 位置
+**** 放在<head> 里面
+#+BEGIN_SRC html
+<html>
+<head> 
+<script></script>
+<script></script>
+</head>
+<body>
+<!-- 这放内容-->
+</body>
+</html>
+#+END_SRC
+    要等所有的javascript文件下载，解析，执行完毕之后，才会呈现body的内容，这会导致出现明显的延迟，而且在延迟期间，浏览器是空白的。
+**** 放在<body> 后面
+#+BEGIN_SRC html
+<html>
+<head>
+</head>
+<body>
+<!--这里放内容-->
+<script></script>
+</body>
+<html>
+#+END_SRC
+     这样在加载解析javascript之前，页面内容将完全呈现出来。用户也因浏览器空白页显示时间缩短，而感觉加载页面速度变快了.
+** <noscript>标签
+该标签在不支持javascript的浏览器，或者javascript被禁用的情况下，会显示里面的内容，里面的内容是html里面可以放在<body>标签内的，除了<script>之外的标签
+#+BEGIN_SRC html
+<html>
+<head>
+</head>
+<body>
+<noscript>
+<p> 本页需要浏览器支持（启用）javascript.
+</noscript>
+</body>
+</html>
+#+END_SRC
+* 第三章
+** typeof 运算符
+*** 用法
+#+BEGIN_SRC javascript
+let message ="hi";
+alert(typeof(message));//string
+alert(typeof message);//string 不带括号也是正确的
+#+END_SRC
+*** 返回值
+**** undefined
+值未定义的时候
+**** boolean
+值是布尔值
+**** number
+值是数值
+**** object
+值是对象或者null
+**** function
+值是函数
+** Object 类型
+每个类型都有的属性和方法
+*** constructor
+保存创造当前对象的函数
+*** hasOwnProperty(propertyName)
+检查给定的属性在当前实例中（而不是原型）是否存在。
+*** isPrototypeOf(Ojbect)
+检查传入的对象是否是当前对象的原型
+*** propertyIsEnumerable(propertyName)
+检查给定的属性能否使用for-in语句来枚举
+*** toLocalString()
+返回对象的字符串表示，该字符串雨执行环境的地区对应
+*** toString()
+返回对象的字符串表示
+*** valueOf()
+返回对象的字符串、数值或布尔表示，通常与toString（）返回值相同
+
+
+
+* 第四章
+** 基本类型和引用类型
+基本类型无法添加动态属性,引用类型可以，string属于基本类型
+#+BEGIN_SRC javascript
+var person = new Object();
+person.name = "Nicholas";
+alert(person.name);//Nicholas
+
+var name = "Nicholas";
+name.age = 27;
+alert(name.age);//undefined
+#+END_SRC
+** instanceof 运算符
+语法:variable instanceof constructor 如果变量是给定引用类型的实例，那么instanceof就会返回true
