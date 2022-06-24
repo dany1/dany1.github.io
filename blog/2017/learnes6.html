@@ -1,0 +1,556 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>ECMAScript6学习笔记</title>
+<!-- 2017-04-06 Thu 14:00 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="dany" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">ECMAScript6学习笔记</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. let与var</a>
+<ul>
+<li><a href="#sec-1-1">1.1. let 只在当前块有效，var只有全局作用域和函数作用域，没有块的概念</a></li>
+<li><a href="#sec-1-2">1.2. 不存在提升</a></li>
+<li><a href="#sec-1-3">1.3. 暂时性死区</a></li>
+<li><a href="#sec-1-4">1.4. 作为顶层对象的属性</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2. const</a></li>
+<li><a href="#sec-3">3. 对象的解构赋值</a>
+<ul>
+<li><a href="#sec-3-1">3.1. 如果变量名字与属性不一致，必须指定名字</a></li>
+<li><a href="#sec-3-2">3.2. 对是否使用默认值的判断是用严格"<code>=</code>"与undefined测试</a></li>
+<li><a href="#sec-3-3">3.3. 等号右边不是对象或数组的情况</a></li>
+<li><a href="#sec-3-4">3.4. 作为参数的解构</a></li>
+<li><a href="#sec-3-5">3.5. 特性情形</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4. =&gt; 函数</a></li>
+<li><a href="#sec-5">5. Array对象</a>
+<ul>
+<li><a href="#sec-5-1">5.1. Array属性</a></li>
+<li><a href="#sec-5-2">5.2. Array方法</a>
+<ul>
+<li><a href="#sec-5-2-1">5.2.1. Array.prototype.reduce(callback,[initialValue])</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+JS学习笔记
+</p>
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> let与var</h2>
+<div class="outline-text-2" id="text-1">
+</div><div id="outline-container-sec-1-1" class="outline-3">
+<h3 id="sec-1-1"><span class="section-number-3">1.1</span> let 只在当前块有效，var只有全局作用域和函数作用域，没有块的概念</h3>
+<div class="outline-text-3" id="text-1-1">
+<div class="org-src-container">
+
+<pre class="src src-javascript">var a = [];
+for(var i = 0; i &lt; 10; ++i) {
+    a[i] = function() {
+	console.log(i);
+    }
+}
+a[6]();//10
+</pre>
+</div>
+<p>
+因为i是var声明的所以是全局有效的
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">var a =[];
+for(let i = 0; i &lt; 10; ++i) {
+    a[i] = function() {
+	console.log(i);
+    }
+}
+a[6]();//6
+</pre>
+</div>
+<p>
+因为i是let声明所以只在本循环内有效，每一次循环都是新的变量。
+javascript内部做了特殊处理，所以保证虽然是新值，但是是上一次循环的值+1
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-2" class="outline-3">
+<h3 id="sec-1-2"><span class="section-number-3">1.2</span> 不存在提升</h3>
+<div class="outline-text-3" id="text-1-2">
+<div class="org-src-container">
+
+<pre class="src src-javascript">console.log(foo);//undefined
+var foo = 2;
+
+console.log(bar);//referenceError
+let var = 2;
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-1-3" class="outline-3">
+<h3 id="sec-1-3"><span class="section-number-3">1.3</span> 暂时性死区</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+let和const 会绑定到当前块，使当前块不在受其他影响
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">var tmp = 123;
+if(true) {
+    tmp='abc';//referenceError
+    let tmp;
+}
+</pre>
+</div>
+<div class="org-src-container">
+
+<pre class="src src-javascript">function bar(x=y, y=2) {
+    return [x,y];
+}
+bar();//报错
+</pre>
+</div>
+<p>
+这个例子是有疑问的。上面代码报错（也可能不报错），说明2个问题(
+1.函数参数默认都是let的
+2.参数的声明顺序是从左到右
+</p>
+</div>
+</div>
+<div id="outline-container-sec-1-4" class="outline-3">
+<h3 id="sec-1-4"><span class="section-number-3">1.4</span> 作为顶层对象的属性</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+var声明的全局对象与顶层对象的属性相同
+let声明的全局对象，则不属于顶层对象
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">var a = 1;
+window.a;//1
+
+let b = 2;
+window.b;//undefined
+</pre>
+</div>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> const</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+const只能保证变量的那个内存地址不变，而并不能保证变量的值不变。
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">const foo = {}
+//为foo增加一个属性，可以成功
+foo.prop=123
+</pre>
+</div>
+<p>
+如果想冻结一个对象，应该使用Object.freeze();
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">const foo = Object.freeze({});
+foo.prop=123;//常规模式，这一句不起作用，严格模式，这一句会报错
+</pre>
+</div>
+<p>
+下面的函数除了对象本身，对象的属性也会冻结
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">var constantize= (obj)=&gt;{
+    Object.freeze(obj);
+Object.keys(obj).forEach((key,i)=&gt;{
+    if(typeof obj[key] === 'object'){
+	constantize(obj[key]);
+    }
+});
+}
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> 对象的解构赋值</h2>
+<div class="outline-text-2" id="text-3">
+</div><div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> 如果变量名字与属性不一致，必须指定名字</h3>
+<div class="outline-text-3" id="text-3-1">
+<div class="org-src-container">
+
+<pre class="src src-javascript">let {foo:baz} = {foo:'aaa','bar':'bbb'}
+baz;//"aaa"
+</pre>
+</div>
+<p>
+先找同名变量，然后再赋值给相应的变量，真正赋值的是后者而不是前者
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">let {foo, bar} = {foo:'aaa',bar:'bbb'}
+</pre>
+</div>
+<p>
+是下面形式的简写
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">let {foo:foo, bar:bar} = {foo:'aaa',bar:'bbb'}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> 对是否使用默认值的判断是用严格"<code>=</code>"与undefined测试</h3>
+<div class="outline-text-3" id="text-3-2">
+<div class="org-src-container">
+
+<pre class="src src-javascript">let {x = 3} = {x:undefined}
+let {y = 3} = {y:null}
+x;//3
+y;//null
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> 等号右边不是对象或数组的情况</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+解构的时候如果等号右边不是数组或对象，就会将其转化为对象
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">let {toString: s} = 123;
+s === Number.prototype.toString // true
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> 作为参数的解构</h3>
+<div class="outline-text-3" id="text-3-4">
+<div class="org-src-container">
+
+<pre class="src src-javascript">function move({x = 0, y = 0}={}){
+    return [x, y];
+}
+move({x:3,y:8});//[3,8]
+move({x:3});//[3,0]
+move({});//[0,0]
+move();//[0,0]
+</pre>
+</div>
+<div class="org-src-container">
+
+<pre class="src src-javascript">function move({x,y}={x:0,y:0}){
+    return [x,y];
+}
+move({x:3,y:8});//[3,8]
+move({x:3});//[3,undefined]
+move({});//[undefined, undefined]
+move();//[undefined, undefined]
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-5" class="outline-3">
+<h3 id="sec-3-5"><span class="section-number-3">3.5</span> 特性情形</h3>
+<div class="outline-text-3" id="text-3-5">
+<div class="org-src-container">
+
+<pre class="src src-javascript">let foo;
+({foot}={foo:1});//圆括号必须
+</pre>
+</div>
+<p>
+上面的情况是因为"{"放在行首，javascript引擎会理解成一个代码块从而发生语法错误， 所以要用圆括号括起来
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">let node = {
+    loc: {
+	start: {
+	    line: 1,
+	    column: 5
+	}
+    }
+};
+
+var { loc: { start: { line }} } = node;
+line; // 1
+loc;  // error: loc is undefined
+start; // error: start is undefined
+</pre>
+</div>
+<p>
+上面的例子只有line是变量，loc和start都是模式不会被赋值
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> =&gt; 函数</h2>
+<div class="outline-text-2" id="text-4">
+<div class="org-src-container">
+
+<pre class="src src-javascript">function Timer() {
+    this.s1 = 0;
+    this.s2 = 0;
+    // 箭头函数
+    setInterval(() =&gt; this.s1++, 1000);
+    // 普通函数
+    setInterval(function () {
+	this.s2++;
+    }, 1000);
+}
+setTimeout(() =&gt; console.log('s1: ', timer.s1), 3100);
+setTimeout(() =&gt; console.log('s2: ', timer.s2), 3100);
+// s1: 3
+// s2: 0
+</pre>
+</div>
+<p>
+以上代码是因为 =&gt;函数中的this是定义时（实例化时）所在的对象，而不是使用时.
+setInterval中的this是全局对象，this.s2++ 相当于 windows.s2++
+</p>
+</div>
+</div>
+<div id="outline-container-sec-5" class="outline-2">
+<h2 id="sec-5"><span class="section-number-2">5</span> Array对象</h2>
+<div class="outline-text-2" id="text-5">
+</div><div id="outline-container-sec-5-1" class="outline-3">
+<h3 id="sec-5-1"><span class="section-number-3">5.1</span> Array属性</h3>
+</div>
+<div id="outline-container-sec-5-2" class="outline-3">
+<h3 id="sec-5-2"><span class="section-number-3">5.2</span> Array方法</h3>
+<div class="outline-text-3" id="text-5-2">
+</div><div id="outline-container-sec-5-2-1" class="outline-4">
+<h4 id="sec-5-2-1"><span class="section-number-4">5.2.1</span> Array.prototype.reduce(callback,[initialValue])</h4>
+<div class="outline-text-4" id="text-5-2-1">
+<p>
+    对数组从左到右的每一个值，调用callback方法，最后返回一个值
+callback原型是 callback(accumulator, currentValue, currentIndex, array);
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="left">accumulator</td>
+<td class="left">上一次调用的返回值，或者是提供的初始值</td>
+</tr>
+
+<tr>
+<td class="left">currentValue</td>
+<td class="left">数组中正在处理的元素</td>
+</tr>
+
+<tr>
+<td class="left">currentIndex</td>
+<td class="left">正在处理元素的索引，如果提供了initialValue 第一次执行从0开始，否则从1开始</td>
+</tr>
+
+<tr>
+<td class="left">array</td>
+<td class="left">调用reduce的数组</td>
+</tr>
+</tbody>
+</table>
+<p>
+initialValue：可选项，其值用于第一次调用callback的第一个参数
+</p>
+
+<p>
+reduce为数组中的每一个元素依次执行回调函数，不包括数组中被删除或从未赋值的元素
+回调函数第一次执行的时候，accumulator和currentIndex有2种情况：
+1.提供了initialValue，accumulator取值为initialValue，currentValue取数组中第一个值
+2.没有提供initialValue，acumulator取数组中第一个值，currentValue取数组中第二个值
+</p>
+
+<p>
+注意：不提供initialValue，reduce会从索引1的地方开始执行callback，跳过第一个索引，提供了initialValue，从索引0开始
+如果数组为空，并且没有提供initialValue，会抛出TypeError。
+如果数组仅有一个元素并且没有提供initialValue，或者数组为空提供了initialValue，那么唯一值将被返回并且callback不会被执行
+建议：提供initialValue通常更安全，否则可能会有3种输出
+</p>
+<div class="org-src-container">
+
+<pre class="src src-javascript">var maxCallback = (pre,cur)=&gt;Math.max(pre.x, cur.x);
+//reduce() without initialValue
+[ { x: 22 }, { x: 42 } ].reduce( maxCallback ); // 42
+[ { x: 22 }            ].reduce( maxCallback ); // { x: 22 }
+[                      ].reduce( maxCallback ); // TypeError
+</pre>
+</div>
+<p>
+因为没有提供initialValue，所以3种情况的返回值不一样
+</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: dany</p>
+<p class="date">Created: 2017-04-06 Thu 14:00</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 25.1.1 (<a href="http://orgmode.org">Org</a> mode 8.2.10)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>

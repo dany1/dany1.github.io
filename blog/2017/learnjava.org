@@ -1,0 +1,52 @@
+#+TITLE: spring学习笔记
+#+HTML_HEAD:<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+
+#+AUTHOR: dany
+spring学习笔记
+* @Componet（java自带的@Named)
+  自动扫描的时候，默认的beanid是类名的第一个字母变小写。如果要指定beanid，那么可以使用Component的参数，例如@Component("task"),那么这个beanid就是task
+* @ComponentScan
+** basePackages 
+   以string[]指定扫描的基础包，会扫描基础包和基础包下面的子包
+** basePackageClasses
+   以class指定扫描的包，会扫描类所在的包和该包的子包
+* @Autowired
+* @Bean
+** 默认情况，name属性是空
+   bean的id与注解的方法名字是一样的
+** 定制bean的id
+   1.可以修改方法名字
+   2.可以通过@Bean的 name 属性指定bean的id
+* <bean>
+  如果不指定id属性，那么bean的id就会是 "class属性 + '#{index}'",index是一个计数形式，用来区分相同类型，其他的bean，起始值是0，递增
+#+BEGIN_SRC xml
+<bean class="com.demo.showcase">
+#+END_SRC
+  那么bean的id就是 com.demo.showcase#0
+* <property>
+** <property name="xxx" value="yyy"/>
+** <property name="xxx" ref="zzz"/>
+* @Import 和 @ImportResource
+  @Import是引入java 配置  @ImportResource是引入xml配置
+  
+
+* @Profile <beans profile=""/>
+  用于激活某个Profile
+* 激活一个profile或者bean
+** xml配置文件
+   #+BEGIN_SRC xml
+  <context-param>
+    <param-name>string.profiles.default</param-name>
+    <param-value>dev</param-value>    
+  </context-param>
+   #+END_SRC
+** @ActiveProfiles("dev")
+** @Conditional 按照某些条件激活某些bean
+* @Qualifier("aaa")
+  注入限定符为aaa的类，默认情况下所有bean的限定符与bean的id相同
+* @Scope
+  Scope 可以是Singleton， Prototype, Session, Request.
+  proxyModes是代理的方式，是解决某个Bean是Singleton的，但是他有session的字段，在用这些字段的时候，要切换成对应的bean的问题
+  ScopedProxyMode.INTERFACES是针对接口的，ScopedProxyMode.TARGET_CLASS是针对类的，针对类的是用CGLib来处理的
+* <bean scope>
+

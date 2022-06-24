@@ -1,0 +1,104 @@
+#+TITLE:react es6 demo工程搭建
+#+HTML_HEAD:<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+* 创建项目demo工程
+** 初始化项目
+#+BEGIN_SRC javascript
+npm init
+#+END_SRC
+** 安装需要的插件
+#+BEGIN_SRC javascript
+//安装webpack
+npm install webpack --save-dev
+npm install webpack-dev-server --save-dev
+//安装react
+npm install react --save
+npm install react-dom --save
+npm install react-router --save
+//安装babel-loader
+npm install babel-loader --save-dev
+npm install babel-core --save-dev
+npm install babel-preset-es2015 --save-dev  //支持ES2015
+npm install babel-preset-react --save-dev //支持jsx
+npm install babel-preset-stage-0 --save-dev //支持ES7
+npm install babel-polyfill --save//
+
+npm install babel-runtime  --save
+npm install babel-plugin-transform-runtime --save-dev
+
+#+END_SRC
+** 项目目录
+#+BEGIN_SRC javascript
+-/app
+   -main.js
+   -demo.js
+-/build
+   -build.js(生成的)
+   -index.html
+-webpack.config.js
+-package.json
+#+END_SRC
+** 设置webpack.config.js
+#+BEGIN_SRC javascript
+var path = require('path');
+module.exports = {
+    entry: [
+        'webpack/hot/dev-server',
+        'webpack-dev-server/client?http://localhost:8080',
+        path.resolve(__dirname, 'app/main.js')],
+    output: {
+        path: path.resolve(__dirname, 'build'),
+        filename: 'bundle.js'
+    },
+    module: {
+        loaders: [
+            {
+                loader: 'babel-loader',
+                exclude: [
+                    path.resolve(__dirname, 'node_modules'),
+                ],
+                include: [
+                    path.resolve(__dirname, 'app'),
+                ],
+                test: /\.js[x]?$/,
+
+                query: {
+                    plugins: ['transform-runtime'],
+                    presets: ['es2015', 'stage-0', 'react']
+                }
+            },
+        ]
+    }
+};
+#+END_SRC
+** 设置package.json
+#+BEGIN_SRC json
+{
+  "name": "demo",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "dev": "webpack-dev-server --devtool eval --progress --colors --hot --content-base build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.14.0",
+    "babel-loader": "^6.2.5",
+    "babel-plugin-transform-runtime": "^6.15.0",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-preset-react": "^6.11.1",
+    "babel-preset-stage-0": "^6.5.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.1"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.13.0",
+    "babel-runtime": "^6.11.6",
+    "react": "^15.3.2",
+    "react-dom": "^15.3.2"
+  }
+}
+#+END_SRC

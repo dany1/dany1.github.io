@@ -1,0 +1,209 @@
+#+TITLE: ECMAScript6学习笔记
+#+HTML_HEAD:<link rel="stylesheet" type="text/css" href="../css/solarized-light.css"/>
+
+#+AUTHOR: dany
+JS学习笔记
+* let与var
+** let 只在当前块有效，var只有全局作用域和函数作用域，没有块的概念
+   #+BEGIN_SRC javascript
+  var a = [];
+  for(var i = 0; i < 10; ++i) {
+      a[i] = function() {
+          console.log(i);
+      }
+  }
+  a[6]();//10
+   #+END_SRC
+   因为i是var声明的所以是全局有效的
+   #+BEGIN_SRC javascript
+  var a =[];
+  for(let i = 0; i < 10; ++i) {
+      a[i] = function() {
+          console.log(i);
+      }
+  }
+  a[6]();//6
+   #+END_SRC
+   因为i是let声明所以只在本循环内有效，每一次循环都是新的变量。
+   javascript内部做了特殊处理，所以保证虽然是新值，但是是上一次循环的值+1
+** 不存在提升
+   #+BEGIN_SRC javascript
+console.log(foo);//undefined
+var foo = 2;
+
+console.log(bar);//referenceError
+let var = 2;
+   #+END_SRC
+
+** 暂时性死区
+   let和const 会绑定到当前块，使当前块不在受其他影响
+   #+BEGIN_SRC javascript
+  var tmp = 123;
+  if(true) {
+      tmp='abc';//referenceError
+      let tmp;
+  }
+   #+END_SRC
+   #+BEGIN_SRC javascript
+  function bar(x=y, y=2) {
+      return [x,y];
+  }
+  bar();//报错
+   #+END_SRC
+   这个例子是有疑问的。上面代码报错（也可能不报错），说明2个问题(
+   1.函数参数默认都是let的
+   2.参数的声明顺序是从左到右
+** 作为顶层对象的属性
+   var声明的全局对象与顶层对象的属性相同
+   let声明的全局对象，则不属于顶层对象
+   #+BEGIN_SRC javascript
+  var a = 1;
+  window.a;//1
+
+  let b = 2;
+  window.b;//undefined
+   #+END_SRC
+* const
+const只能保证变量的那个内存地址不变，而并不能保证变量的值不变。
+#+BEGIN_SRC javascript
+  const foo = {}
+  //为foo增加一个属性，可以成功
+  foo.prop=123
+#+END_SRC
+如果想冻结一个对象，应该使用Object.freeze();
+#+BEGIN_SRC javascript
+  const foo = Object.freeze({});
+  foo.prop=123;//常规模式，这一句不起作用，严格模式，这一句会报错
+#+END_SRC
+下面的函数除了对象本身，对象的属性也会冻结
+#+BEGIN_SRC javascript
+  var constantize= (obj)=>{
+      Object.freeze(obj);
+  Object.keys(obj).forEach((key,i)=>{
+      if(typeof obj[key] === 'object'){
+          constantize(obj[key]);
+      }
+  });
+  }
+#+END_SRC
+
+* 对象的解构赋值
+** 如果变量名字与属性不一致，必须指定名字
+   #+BEGIN_SRC javascript
+     let {foo:baz} = {foo:'aaa','bar':'bbb'}
+     baz;//"aaa"
+
+   #+END_SRC
+   先找同名变量，然后再赋值给相应的变量，真正赋值的是后者而不是前者
+   #+BEGIN_SRC javascript
+     let {foo, bar} = {foo:'aaa',bar:'bbb'}
+   #+END_SRC
+   是下面形式的简写
+   #+BEGIN_SRC javascript
+     let {foo:foo, bar:bar} = {foo:'aaa',bar:'bbb'}
+   #+END_SRC
+** 对是否使用默认值的判断是用严格"==="与undefined测试
+   #+BEGIN_SRC javascript
+     let {x = 3} = {x:undefined}
+     let {y = 3} = {y:null}
+     x;//3
+     y;//null
+   #+END_SRC
+
+** 等号右边不是对象或数组的情况
+   解构的时候如果等号右边不是数组或对象，就会将其转化为对象
+   #+BEGIN_SRC javascript
+     let {toString: s} = 123;
+     s === Number.prototype.toString // true
+
+   #+END_SRC
+** 作为参数的解构
+   #+BEGIN_SRC javascript
+     function move({x = 0, y = 0}={}){
+         return [x, y];
+     }
+     move({x:3,y:8});//[3,8]
+     move({x:3});//[3,0]
+     move({});//[0,0]
+     move();//[0,0]
+   #+END_SRC
+   #+BEGIN_SRC javascript
+     function move({x,y}={x:0,y:0}){
+         return [x,y];
+     }
+     move({x:3,y:8});//[3,8]
+     move({x:3});//[3,undefined]
+     move({});//[undefined, undefined]
+     move();//[undefined, undefined]
+   #+END_SRC
+** 特性情形
+   #+BEGIN_SRC javascript
+     let foo;
+     ({foot}={foo:1});//圆括号必须
+   #+END_SRC
+   上面的情况是因为"{"放在行首，javascript引擎会理解成一个代码块从而发生语法错误， 所以要用圆括号括起来
+   #+BEGIN_SRC javascript
+     let node = {
+         loc: {
+             start: {
+                 line: 1,
+                 column: 5
+             }
+         }
+     };
+
+     var { loc: { start: { line }} } = node;
+     line; // 1
+     loc;  // error: loc is undefined
+     start; // error: start is undefined
+   #+END_SRC
+   上面的例子只有line是变量，loc和start都是模式不会被赋值
+* => 函数
+  #+BEGIN_SRC javascript
+    function Timer() {
+        this.s1 = 0;
+        this.s2 = 0;
+        // 箭头函数
+        setInterval(() => this.s1++, 1000);
+        // 普通函数
+        setInterval(function () {
+            this.s2++;
+        }, 1000);
+    }
+    setTimeout(() => console.log('s1: ', timer.s1), 3100);
+    setTimeout(() => console.log('s2: ', timer.s2), 3100);
+    // s1: 3
+    // s2: 0
+  #+END_SRC
+以上代码是因为 =>函数中的this是定义时（实例化时）所在的对象，而不是使用时.
+setInterval中的this是全局对象，this.s2++ 相当于 windows.s2++
+* Array对象
+** Array属性
+** Array方法
+*** Array.prototype.reduce(callback,[initialValue])
+    对数组从左到右的每一个值，调用callback方法，最后返回一个值
+callback原型是 callback(accumulator, currentValue, currentIndex, array);
+| accumulator  | 上一次调用的返回值，或者是提供的初始值                          |
+| currentValue | 数组中正在处理的元素                                            |
+| currentIndex | 正在处理元素的索引，如果提供了initialValue 第一次执行从0开始，否则从1开始 |
+| array        | 调用reduce的数组                                                     |
+initialValue：可选项，其值用于第一次调用callback的第一个参数
+
+reduce为数组中的每一个元素依次执行回调函数，不包括数组中被删除或从未赋值的元素
+回调函数第一次执行的时候，accumulator和currentIndex有2种情况：
+1.提供了initialValue，accumulator取值为initialValue，currentValue取数组中第一个值
+2.没有提供initialValue，acumulator取数组中第一个值，currentValue取数组中第二个值
+
+注意：不提供initialValue，reduce会从索引1的地方开始执行callback，跳过第一个索引，提供了initialValue，从索引0开始
+如果数组为空，并且没有提供initialValue，会抛出TypeError。
+如果数组仅有一个元素并且没有提供initialValue，或者数组为空提供了initialValue，那么唯一值将被返回并且callback不会被执行
+建议：提供initialValue通常更安全，否则可能会有3种输出
+#+BEGIN_SRC javascript
+  var maxCallback = (pre,cur)=>Math.max(pre.x, cur.x);
+  //reduce() without initialValue
+  [ { x: 22 }, { x: 42 } ].reduce( maxCallback ); // 42
+  [ { x: 22 }            ].reduce( maxCallback ); // { x: 22 }
+  [                      ].reduce( maxCallback ); // TypeError
+#+END_SRC
+因为没有提供initialValue，所以3种情况的返回值不一样
+
