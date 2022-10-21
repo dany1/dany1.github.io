@@ -353,6 +353,30 @@ sudo -u www php occ  maintenance:install --database "mysql" --database-name "nex
 */5 * * * * sudo -u www /usr/local/php/bin/php /home/wwwroot/nextcloud/cron.php &
 ```
 
+## 优化
+
+nextcloud安装好之后，打开每个页面都要loading很久，所以需要对参数进行优化
+
+### 解除nextcloud上传文件块大小限制
+
+``` shell
+cd /var/www/nextcloud
+sudo -u www-data php occ config:app:set files max_chunk_size --value 0
+```
+
+### enable php opcache
+
+```shell
+vim /usr/local/php/etc/php.ini
+# 打开下面注释
+opcache.enable = 1
+opcache.interned_strings_buffer = 8
+opcache.max_accelerated_files = 10000
+opcache.memory_consumption = 128
+opcache.save_comments = 1
+opcache.revalidate_freq = 1
+```
+
 ## ddns配置
 
 定时检查域名是否改变,如果变了同步修改阿里云的域名解析  
