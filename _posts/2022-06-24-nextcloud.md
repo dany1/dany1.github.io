@@ -517,5 +517,163 @@ crontab -e
 */1 * * * * /home/wwwroot/nextcloud/ddns.py
 ```
 
+## PVE 安装
+
+笔记本盒盖不休眠,编辑`/etc/systemd/logind.conf`
+```shell
+#HandlePowerKey按下电源键后的行为，默认power off
+#HandleSleepKey 按下挂起键后的行为，默认suspend
+#HandleHibernateKey按下休眠键后的行为，默认hibernate
+#HandleLidSwitch合上笔记本盖后的行为，默认suspend（改为ignore；即合盖不休眠）在原文件中，还要去掉当前行和LidSwitchIgnoreInhibited=yes这行前面的 #
+```
+然后重启服务`service systemd-logind restart`
+
+### local和local-lvm区别
+
+local路径是`/var/lib/vz` vz是文件夹
+
+local-lvm路径是`/dev/pve/data` data是个文件
+
+应该使用那个？
+如果pve安装在类似zfs这种不支持快照功能的ext4文件系统，但是我们仍然想使用pve的快照功能，这样只能使用lvm-thin。
+如果我们在zfs上安装了pve，这也不是很重要，pve支持zfs内置的快照功能。
+local是文件夹，所以方便查看里面的内容。
+
+删除local-lvm `lvremove /dev/pve/data`,然后把磁盘分配给 local `lvextend -rl +100%FREE /dev/pve/root`
+
+### 修改源
+pve7.x的版本，debian11内核的
+
+```shell
+# 删除企业版的源
+mv /etc/apt/sources.list.d/pve-enterprise.list /etc/apt/sources.list.d/pve-enterprise.list.bak
+#中科大的 proxmox更新源
+echo "deb https://mirrors.ustc.edu.cn/proxmox/debian/pve bullseye pve-no-subscription" > /etc/apt/sources.list.d/pve-no-subscription.list
+#阿里Debian源
+sed -i.bak "s#ftp.debian.org/debian#mirrors.aliyun.com/debian#g" /etc/apt/sources.list
+sed -i "s#security.debian.org#mirrors.aliyun.com/debian-security#g" /etc/apt/sources.list
+apt update && apt dist-upgrade     #更新软件
+
+# LXC仓库中科大的源
+sed -i.bak "s#http://download.proxmox.com/images#https://mirrors.ustc.edu.cn/proxmox/images#g" /usr/share/perl5/PVE/APLInfo.pm
+wget -O /var/lib/pve-manager/apl-info/mirrors.ustc.edu.cn https://mirrors.ustc.edu.cn/proxmox/images/aplinfo-pve-7.dat
+
+#CEPH 中科大源
+echo "deb https://mirrors.ustc.edu.cn/proxmox/debian/ceph-pacific bullseye main" > /etc/apt/sources.list.d/ceph.list
+sed -i.bak "s#http://download.proxmox.com/debian#https://mirrors.ustc.edu.cn/proxmox/debian#g" /usr/share/perl5/PVE/CLI/pveceph.pm
+
+apt update && apt dist-upgrade
+systemctl restart pvedaemon
+# 删除订阅弹窗
+# 7.x不管用
+# sed -Ezi.bak "s/(Ext.Msg.show\(\{\s+title: gettext\('No valid sub)/void\(\{ \/\/\1/g" /usr/share/javascript/proxmox-widget-toolkit/proxmoxlib.js && systemctl restart pveproxy.service
+```
+
+### 格式化磁盘
+
+```shell
+fdisk 格式化 然后w
+fdisk -l
+Device     Boot Start        End    Sectors   Size Id Type
+/dev/sdb1        2048 1953525167 1953523120 931.5G 83 Linux
+# ext4格式
+mkfs.ext4 /dev/sdb1
+```
+
+### 群晖
+#### 安装 ds918 6.23-25426
+[引导下载地址](https://dl.gxnas.com:1443/%E9%BB%91%E7%BE%A4%E6%99%96/DS918/DS918+_6.23-25426-1.04b%EF%BC%88%E5%BC%95%E5%AF%BC%E6%96%87%E4%BB%B6%EF%BC%89.img)
+[固件下载地址]()
+pve创建虚拟机
+重要的选项：
+
+
+|:-|:-|
+|操做系统|不使用任何介质|
+|系统|机型:q35 bios:OVMF(UEFI) 添加EFI磁盘不选择|
+|磁盘|sata|
+|cpu|kvm64|
+|网络|intel E1000|
+
+分离磁盘删除磁盘，然后
+```shell
+qm importdisk <VMID> <引导文件名称>.img local
+```
+编辑新产生的磁盘，改为sata
+修改引导顺序
+接下来，点击中间菜单中的“选项”，双击“引导顺序”，将“sata0”打钩，剩下设备的取消打钩：
+
+#### 磁盘直通
+```shell
+#查看磁盘id
+ls -l /dev/disk/by-id
+# 不要partx部分的是磁盘id
+qm set <VMID> -sata1 /dev/disk/by-id/硬盘id
+```
+
+#### 磁盘直通后读取磁盘内容
+磁盘直通给群晖，选的basic模式，但是在pve里面`fdisk -l`显示是 raid， 想要查看磁盘的内容,参考了[^3]
+```shell
+Device     Boot   Start        End    Sectors   Size Id Type
+/dev/sdb1          2048    4982527    4980480   2.4G fd Linux raid autodetect
+/dev/sdb2       4982528    9176831    4194304     2G fd Linux raid autodetect
+/dev/sdb3       9437184 1953320351 1943883168 926.9G fd Linux raid autodetect
+```
+
+
+```shell
+#一定要在ubuntu-18.04-desktop-amd64.iso 
+[下载地址](https://old-releases.ubuntu.com/releases/18.04/ubuntu-18.04-desktop-amd64.iso)
+sudo -i
+apt-get update
+# apt-get update报错的话可以执行
+apt-get install --reinstall libappstream4
+# 安装阵列
+apt-get install -y mdadm lvm2
+mdadm -AsfR && vgchange -ay
+cat /proc/mdstat
+lvs
+# 根据cat 和lvs的结果确定磁盘路径  
+cat 输出
+root@ubuntu:~# cat /proc/mdstat
+
+Personalities : [raid1]
+
+*md2* : active raid1 sdc3[0]
+
+73328704 blocks super 1.2 [1/1] [U]
+
+unused devices:<none>
+
+lvs没有输出
+那么设备路径就是 /dev/md2
+
+#然后
+mount /dev/md/2 /mnt/mainhd
+```
+
+### moments无法预览的问题
+
+```shell
+# 安装第三方ffmpeg
+sudo mv /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt.bak
+sudo curl -Lko /etc/ssl/certs/ca-certificates.crt https://curl.se/ca/cacert.pem
+```
+
+浏览器登陆DSM后打开套件中心，将信任层级设置为任何发行者，在套件来源处第三方套件源。https://packages.synocommunity.com, 然后在 套件的 community标签下，下载ffmpeg
+```shell
+#备份原有的ffmpeg
+sudo mv /usr/bin/ffmpeg /usr/bin/ffmpeg.old
+# 其中volume1替换成自己套件安装的存储池，比如volume2、volume3等。
+# 方式一直接替换
+# cp /volume1/@appstore/ffmpeg/bin/ffmpeg /volume1/@appstore/VideoStation/bin
+cp /volume1/@appstore/ffmpeg/bin/ffmpeg /usr/bin
+#方式二软连接
+sudo ln -s /volume1/\@appstore/ffmpeg/bin/ffmpeg /usr/bin/
+```
+
+
+
 [^1]: https://zq99299.github.io/linux-tutorial/tutorial-basis/07/03.html#%E7%A3%81%E7%9B%98%E6%A0%BC%E5%BC%8F%E5%8C%96%EF%BC%88%E5%BB%BA%E7%AB%8B%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F%EF%BC%89
 [^2]: https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/occ_command.html#command-line-installation-label
+[^3]: https://kb.synology.com/en-uk/DSM/tutorial/How_can_I_recover_data_from_my_DiskStation_using_a_PC

@@ -57,7 +57,19 @@ sudo vim /etc/sysconfig/iptables
 sudo useradd -g group  -s /sbin/nologin  username
 ```
 
-## iptables
+## 防火墙开启端口
+
+### fireall
+```shell
+# 添加  permanent表示永久添加
+firewall-cmd --zone=public --add-port=80/tcp --permanent
+# 移除
+firewall-cmd --zone=public --remove-port=80/tcp --permanent
+# 重新加载
+firewall-cmd --reload
+```
+
+### iptables
 
 添加的规则重启后就失效了,想要规则永久有效,修改`/etc/sysconfig/iptables` 添加相应的规则
 
@@ -96,3 +108,58 @@ Enter password:
 Confirm password: 
 Password successfully updated for user with username abce.
 ```
+
+备份恢复
+
+```shell
+# 创建备份
+gitlab-backup create
+# 忽略数据库和uploads备份
+gitlab-backup create SKIP=db,uploads
+# 恢复备份
+gitlab-backup restore force=yes BACKUP=1597812374_2020_08_19_12.10.5
+```
+
+### centos开机自动联网
+
+```shell
+cd /etc/sysconfig/network-scripts
+vim  ifccfg-eth0
+
+TYPE=Ethernet
+PROXY_METHOD=none
+BROWSER_ONLY=no
+BOOTPROTO=dhcp
+DEFROUTE=yes
+IPV4_FAILURE_FATAL=no
+IPV6INIT=yes
+IPV6_AUTOCONF=yes
+IPV6_DEFROUTE=yes
+IPV6_FAILURE_FATAL=no
+IPV6_ADDR_GEN_MODE=stable-privacy
+NAME=eth0
+UUID=46670905-b22d-46a3-81d4-4a9a3731d9ab
+DEVICE=eth0
+#修改为yes默认值是no
+ONBOOT=yes
+
+```
+
+### 挂载nfs
+
+```shell
+# 查看nfs-utils是否安装，没安装的安装一下
+rpm -qa | grep nfs-utils
+yum install nfs-utils
+# 查看可以mount的信息
+showmount -e 192.168.1.111
+#显示如下信息
+Export list for 192.168.1.111:
+/volume/data 192.168.1.111
+# 挂载
+sudo mount -t nfs 192.168.1.111:/volume/data /mnt/data
+# 开机自动挂载编辑 /etc/fstab
+192.168.1.111:/volume/data /mnt/data nfs defaults 0 0
+```
+
+
