@@ -163,3 +163,35 @@ sudo mount -t nfs 192.168.1.111:/volume/data /mnt/data
 ```
 
 
+### python 多版本
+
+1. 安装pyenv
+
+```shell
+# 安装
+curl https://pyenv.run | bash
+# 如果上面的不行，可以使用下面的
+curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
+# 设置环境变量
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+```
+
+2. 使用
+
+```shell
+# 使用国内镜像下载安装包
+wget https://registry.npmmirror.com/-/binary/python/3.11.2/Python-3.11.2.tar.xz -P ~/.pyenv/cache
+
+# 安装下载的包
+pyenv install 3.11.2
+
+pyenv install -v 3.11.2
+
+
+# python安装包的时候加上镜像
+
+python3 -m pip install --upgrade acryl-datahub -i https://mirrors.aliyun.com/pypi/simple/
+```
+
