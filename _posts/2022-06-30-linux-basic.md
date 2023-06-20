@@ -195,3 +195,13 @@ pyenv install -v 3.11.2
 python3 -m pip install --upgrade acryl-datahub -i https://mirrors.aliyun.com/pypi/simple/
 ```
 
+## 网络排查命令
+
+* netstat -s
+* ss -lnt
+
+```shell
+State      Recv-Q Send-Q      Local Address:Port        Peer Address:Port 
+LISTEN     0      128          *:4000                      *:*
+```
+Send-Q 表示 listen端口上accept队列的最大长度， Recv-Q表示accept队列当前用了多少
