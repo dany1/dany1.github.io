@@ -205,3 +205,17 @@ State      Recv-Q Send-Q      Local Address:Port        Peer Address:Port
 LISTEN     0      128          *:4000                      *:*
 ```
 Send-Q 表示 listen端口上accept队列的最大长度， Recv-Q表示accept队列当前用了多少
+
+
+## 交换分区
+
+```shell
+#创建256M交换分区
+sudo dd if=/dev/zero of=/swap bs=1M count=256
+sudo chmod 600 /swap
+sudo mkswap /swap
+sudo swapon /swap
+# 删除交换分区
+sudo swapoff /swap
+sudo rm /swap
+```
